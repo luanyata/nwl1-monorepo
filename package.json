@@ -8,6 +8,7 @@
   },
   "workspaces": [
     "packages/*",
+    "packages/clients/*",
     "packages/shared/configs/*"
   ],
   "author": "Luan Lima <luan@yata.dev>",
@@ -16,9 +17,10 @@
     "@nlw-1/eslint": "*",
     "@types/jest": "^26.0.15",
     "cz-emoji": "^1.2.2",
-    "jest": "^26.6.0",
+    "jest": "26.6.0",
     "ts-jest": "^26.4.1",
-    "typescript": "^4.0.3"
+    "typescript": "^4.0.3",
+    "babel-jest": "^26.6.0"
   },
   "config": {
     "commitizen": {
