@@ -29,7 +29,7 @@ class PointsController {
       longitude,
       city,
       uf,
-      item,
+      items,
     } = request.body;
 
     const trx = await knex.transaction();
@@ -42,13 +42,12 @@ class PointsController {
       longitude,
       city,
       uf,
-      item,
       image: '',
     };
 
     const insertedIds = await trx('points').insert(point);
 
-    const pointItems = item.map((itemId: number) => {
+    const pointItems = items.map((itemId: number) => {
       return {
         item_id: itemId,
         point_id: insertedIds[0],
