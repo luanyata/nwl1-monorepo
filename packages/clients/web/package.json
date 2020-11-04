@@ -2,6 +2,7 @@
   "name": "@nlw-1/web",
   "version": "0.1.0",
   "dependencies": {
+    "@nlw-1/axios": "*",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
@@ -9,15 +10,13 @@
     "@types/node": "^12.0.0",
     "@types/react": "^16.9.53",
     "@types/react-dom": "^16.9.8",
-    "leaflet": "^1.7.1",
+    "google-map-react": "^2.1.9",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-icons": "^3.11.0",
-    "react-leaflet": "^3.0.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.0",
-    "web-vitals": "^0.2.4",
-    "@nlw-1/axios": "*"
+    "web-vitals": "^0.2.4"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -44,6 +43,7 @@
     ]
   },
   "devDependencies": {
+    "@types/google-map-react": "^2.1.0",
     "@types/react-leaflet": "^2.5.2",
     "@types/react-router-dom": "^5.1.6",
     "babel-jest": "^26.6.2",

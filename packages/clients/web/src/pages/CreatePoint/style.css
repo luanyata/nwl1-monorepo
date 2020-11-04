@@ -164,6 +164,13 @@
   background: #2FB86E;
 }
 
+.maps{
+  height: 50vh;
+   width: 100%;
+   border-radius: 25px;
+   margin-bottom: 15px;
+}
+
 .items-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

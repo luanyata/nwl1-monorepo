@@ -1,10 +1,10 @@
 import React, { ChangeEvent, FormEvent, useEffect, useState } from 'react'
 import { Link, useHistory } from 'react-router-dom'
 import { FiArrowLeft } from 'react-icons/fi'
-import './style.css'
 import logo from '../../assets/logo.svg'
-import { MapContainer, TileLayer, Marker, MapConsumer, useMapEvent } from 'react-leaflet'
 import { api, axios } from '@nlw-1/axios'
+import Maps from '../../components/Maps'
+import './style.css'
 
 interface Item {
   id: number;
@@ -22,6 +22,11 @@ interface City {
   nome: string
 }
 
+interface ICoordinates {
+  lat: number;
+  lng: number
+}
+
 const CreatePoint: React.FC = () => {
   const [items, setItems] = useState<Item[]>([])
   const [ufs, setUFs] = useState<UF[]>([])
@@ -36,8 +41,7 @@ const CreatePoint: React.FC = () => {
   const [selectedUf, setSelectedUf] = useState('')
   const [selectedCity, setSelectedCity] = useState('')
   const [selectedItems, setSelectedItems] = useState<number[]>([])
-  const [initialPosition, setInitialPosition] = useState<[number, number]>([0, 0])
-  const [position, setPosition] = useState<[number, number]>([0, 0])
+  const [position, setPosition] = useState<ICoordinates>({ lat: 0, lng: 0 })
 
   const history = useHistory()
 
@@ -58,14 +62,7 @@ const CreatePoint: React.FC = () => {
       .then(response => setCities(response.data))
   }, [selectedUf])
 
-  useEffect(() => {
-    navigator.geolocation.getCurrentPosition(position => {
-      const { latitude, longitude } = position.coords
-      setInitialPosition([latitude, longitude])
-    })
-  }, [])
-
-  function handleInputChange(event: ChangeEvent<HTMLInputElement>) {
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target
     setFormData({
       ...formData,
@@ -73,7 +70,7 @@ const CreatePoint: React.FC = () => {
     })
   }
 
-  function handleSelecItem(id: number) {
+  const handleSelecItem = (id: number) => {
     const alreadySelected = selectedItems.findIndex(item => item === id)
     if (alreadySelected >= 0) {
       const filteredItems = selectedItems.filter(item => item !== id)
@@ -83,13 +80,13 @@ const CreatePoint: React.FC = () => {
     }
   }
 
-  async function handleSubmit(event: FormEvent) {
+  const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
 
     const { email, name, whatsapp } = formData
     const city = selectedCity;
     const uf = selectedUf;
-    const [latitude, longitude] = position;
+    const { lat, lng } = position;
     const items = selectedItems;
     const data = {
       email,
@@ -97,14 +94,14 @@ const CreatePoint: React.FC = () => {
       whatsapp,
       city,
       uf,
-      latitude,
-      longitude,
+      latitude: lat,
+      longitude: lng,
       items
     }
 
     await api.post('points', data)
     alert("Ponto de coleta criado")
-    history.goBack()
+    history.push('/')
   }
 
   return (
@@ -163,25 +160,9 @@ const CreatePoint: React.FC = () => {
             <span>Selecione o endereço no mapa</span>
           </legend>
 
-          <MapContainer center={initialPosition} zoom={15}>
-
-            <MapConsumer >
-              {() => {
-                // eslint-disable-next-line react-hooks/rules-of-hooks
-                useMapEvent('click', e => {
-                  setPosition([e.latlng.lat, e.latlng.lng])
-                })
-                return null
-              }}
-            </MapConsumer>
-
-            <TileLayer attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-            <Marker position={position} eventHandlers={{
-              mouseup: e => console.log(e)
-            }} />
-
-          </MapContainer>
+          <div className="maps">
+            <Maps position={position} setPosition={setPosition} />
+          </div>
 
           <div className="field-group">
             <div className="field">

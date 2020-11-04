@@ -44,7 +44,7 @@ $ yarn dev:server
 
 ### Executar cliente web
 
-No duretório `nwl1-monorepo/packages/clients/web` execute o comando:
+No diretório `nwl1-monorepo/packages/clients/web` execute o comando:
 ```
 $ yarn start
 ```
