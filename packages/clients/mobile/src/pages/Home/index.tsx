@@ -1,19 +1,27 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import { View, Image, StyleSheet, Text, ImageBackground } from 'react-native'
 import { Feather } from '@expo/vector-icons'
 import { RectButton } from 'react-native-gesture-handler'
+import { useNavigation } from '@react-navigation/native'
 
 const Home = () => {
+
+  const navigation = useNavigation()
+
+  const handleNavigationtoPoints = useCallback(() =>
+    navigation.navigate('Points'), [],
+  )
+
   return (
     <ImageBackground source={require('../../assets/home-background.png')} style={styles.container}>
       <View style={styles.main}>
         <Image source={require('../../assets/logo.png')} />
         <Text style={styles.title} >Seu marketplace de coleta de resíduos</Text>
-        <Text style={styles.description}>Ajudamos pessoas aencontrarem pontosde coleta de forma eficiente</Text>
+        <Text style={styles.description}>Ajudamos pessoas a encontrarem pontosde coleta de forma eficiente</Text>
       </View>
 
       <View style={styles.footer}>
-        <RectButton style={styles.button} onPress={() => { }} >
+        <RectButton style={styles.button} onPress={handleNavigationtoPoints} >
           <View style={styles.buttonIcon}>
             <Text>
               <Feather name="arrow-right" color="#fff" size={24} />
