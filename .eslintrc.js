@@ -1,3 +1,3 @@
-const config = require("@nlw-1/eslint")
+const eslintConfig = require("@nlw-1/eslint")
 
-module.exports = config
+module.exports = eslintConfig

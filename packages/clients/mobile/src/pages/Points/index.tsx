@@ -1,13 +1,12 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import Constants from 'expo-constants'
 import { Feather } from '@expo/vector-icons'
-import { useNavigation } from '@react-navigation/native'
+import { useNavigation, useRoute } from '@react-navigation/native'
 import { View, StyleSheet, TouchableOpacity, Text, ScrollView, Image, Alert } from 'react-native'
 import MapView, { Marker } from 'react-native-maps'
 import { SvgUri } from 'react-native-svg'
 import * as Location from 'expo-location'
 import { api } from '@nlw-1/axios'
-
 
 interface Item {
   id: number;
@@ -15,10 +14,30 @@ interface Item {
   imageUrl: string
 }
 
+interface Point {
+  id: number,
+  name: string,
+  image: string;
+  latitude: number;
+  longitude: number;
+}
+
+interface Params {
+  uf: string;
+  city: string
+}
+
 const Points: React.FC = () => {
   const navigation = useNavigation()
+  const route = useRoute()
+
+  const routeParams = route.params as Params
+
+  console.log(routeParams)
 
   const [items, setItems] = useState<Item[]>([])
+  const [selectedItems, setSelectedItems] = useState<number[]>([])
+  const [points, setPoints] = useState<Point[]>([])
   const [initialPosition, setinitialPosition] = useState<[number, number]>([0, 0])
 
   useEffect(() => {
@@ -39,11 +58,31 @@ const Points: React.FC = () => {
   }, [])
 
   useEffect(() => {
+    api.get("points", { params: { city: routeParams.city, uf: routeParams.uf, items: selectedItems } })
+      .then(response => {
+        console.log(response.data)
+        setPoints(response.data)
+      })
+  }, [selectedItems])
+
+  useEffect(() => {
     api.get('items')
       .then(response => setItems(response.data))
       .catch(err => console.warn(err))
 
   }, [])
+
+
+  const handleSelecItem = useCallback((id: number) => {
+    const alreadySelected = selectedItems.findIndex(item => item === id)
+    if (alreadySelected >= 0) {
+      const filteredItems = selectedItems.filter(item => item !== id)
+      setSelectedItems(filteredItems)
+    } else {
+      setSelectedItems([...selectedItems, id])
+    }
+  }, [selectedItems])
+
 
   const handleNavigationBack = useCallback(
     () => navigation.goBack(),
@@ -51,7 +90,7 @@ const Points: React.FC = () => {
   )
 
   const handleNavigationToDetail = useCallback(
-    () => navigation.navigate("Detail"),
+    (pointId: number) => navigation.navigate("Detail", { pointId }),
     [],
   )
 
@@ -74,34 +113,45 @@ const Points: React.FC = () => {
                 longitude: initialPosition[1],
                 latitudeDelta: 0.014,
                 longitudeDelta: 0.014
-              }} >
-              <Marker
-                style={styles.mapMarker}
-                onPress={handleNavigationToDetail}
-                coordinate={{
-                  latitude: -27.5853589,
-                  longitude: -48.5174766,
-                }}>
-                <View style={styles.mapMarkerContainer}>
-                  <Image style={styles.mapMarkerImage} source={{ uri: "https://i.pinimg.com/564x/60/2d/14/602d141a2af06096ad1c698f6a206448.jpg" }} />
-                  <Text style={styles.mapMarkerTitle}>Mercado</Text>
-                </View>
-              </Marker>
+              }}>
+
+              {points.map(point => (
+                <Marker key={String(point.id)}
+                  style={styles.mapMarker}
+                  onPress={() => handleNavigationToDetail(point.id)}
+                  coordinate={{
+                    latitude: point.latitude,
+                    longitude: point.longitude,
+                  }}>
+                  <View style={styles.mapMarkerContainer}>
+                    <Image style={styles.mapMarkerImage} source={{ uri: point.image }} />
+                    <Text style={styles.mapMarkerTitle}>{point.name}</Text>
+                  </View>
+                </Marker>
+              ))}
             </MapView>
           )}
         </View>
       </View>
       <View style={styles.itemsContainer}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 20 }}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ paddingHorizontal: 20 }}>
 
           {items.map(item => (
-            <TouchableOpacity key={String(item.id)} style={styles.item}>
+            <TouchableOpacity
+              activeOpacity={0.6}
+              key={String(item.id)}
+              style={[
+                styles.item,
+                selectedItems.includes(item.id) ? styles.selectedItem : {}
+              ]}
+              onPress={() => handleSelecItem(item.id)}>
               <SvgUri width={42} height={42} uri={item.imageUrl} />
               <Text style={styles.itemTitle}>{item.title}</Text>
             </TouchableOpacity>
           ))}
-
-
         </ScrollView>
       </View>
     </>
