@@ -2,9 +2,10 @@ import React, { useCallback, useEffect, useState } from 'react'
 import Constants from 'expo-constants'
 import { Feather } from '@expo/vector-icons'
 import { useNavigation } from '@react-navigation/native'
-import { View, StyleSheet, TouchableOpacity, Text, ScrollView, Image } from 'react-native'
+import { View, StyleSheet, TouchableOpacity, Text, ScrollView, Image, Alert } from 'react-native'
 import MapView, { Marker } from 'react-native-maps'
 import { SvgUri } from 'react-native-svg'
+import * as Location from 'expo-location'
 import { api } from '@nlw-1/axios'
 
 
@@ -18,6 +19,24 @@ const Points: React.FC = () => {
   const navigation = useNavigation()
 
   const [items, setItems] = useState<Item[]>([])
+  const [initialPosition, setinitialPosition] = useState<[number, number]>([0, 0])
+
+  useEffect(() => {
+    const loadPosition = async () => {
+      const { status } = await Location.requestPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert("Oooops...", "Precisamos de sua permissão para obter a localização!")
+        return
+      }
+
+      const location = await Location.getCurrentPositionAsync()
+      const { latitude, longitude } = location.coords
+      setinitialPosition([latitude, longitude])
+    }
+
+    loadPosition()
+
+  }, [])
 
   useEffect(() => {
     api.get('items')
@@ -46,25 +65,30 @@ const Points: React.FC = () => {
         <Text style={styles.description}>Encontre no mapa um ponto de coleta.</Text>
 
         <View style={styles.mapContainer}>
-          <MapView style={styles.map} initialRegion={{
-            latitude: -27.5853589,
-            longitude: -48.5174766,
-            latitudeDelta: 0.014,
-            longitudeDelta: 0.014
-          }} >
-            <Marker
-              style={styles.mapMarker}
-              onPress={handleNavigationToDetail}
-              coordinate={{
-                latitude: -27.5853589,
-                longitude: -48.5174766,
-              }}>
-              <View style={styles.mapMarkerContainer}>
-                <Image style={styles.mapMarkerImage} source={{ uri: "https://i.pinimg.com/564x/60/2d/14/602d141a2af06096ad1c698f6a206448.jpg" }} />
-                <Text style={styles.mapMarkerTitle}>Mercado</Text>
-              </View>
-            </Marker>
-          </MapView>
+
+          {initialPosition[0] !== 0 && (
+            <MapView style={styles.map}
+              loadingEnabled={initialPosition[0] === 0}
+              initialRegion={{
+                latitude: initialPosition[0],
+                longitude: initialPosition[1],
+                latitudeDelta: 0.014,
+                longitudeDelta: 0.014
+              }} >
+              <Marker
+                style={styles.mapMarker}
+                onPress={handleNavigationToDetail}
+                coordinate={{
+                  latitude: -27.5853589,
+                  longitude: -48.5174766,
+                }}>
+                <View style={styles.mapMarkerContainer}>
+                  <Image style={styles.mapMarkerImage} source={{ uri: "https://i.pinimg.com/564x/60/2d/14/602d141a2af06096ad1c698f6a206448.jpg" }} />
+                  <Text style={styles.mapMarkerTitle}>Mercado</Text>
+                </View>
+              </Marker>
+            </MapView>
+          )}
         </View>
       </View>
       <View style={styles.itemsContainer}>
