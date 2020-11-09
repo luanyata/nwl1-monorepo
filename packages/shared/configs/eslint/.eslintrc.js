@@ -1,18 +1,21 @@
 module.exports = {
   env: {
-    node: true,
-    jest: true,
-    browser: true,
-    es2021: true
+    "browser": true,
+    "es6": true,
+    "node": true,
+    "jest": true
   },
   extends: [
-    "airbnb",
-    "airbnb-base",
     "plugin:react/recommended",
+    "airbnb-base",
     "plugin:@typescript-eslint/recommended",
     "prettier/@typescript-eslint",
     "plugin:prettier/recommended"
   ],
+  "globals": {
+    "Atomics": "readonly",
+    "SharedArrayBuffer": "readonly"
+  },
   parser: '@typescript-eslint/parser',
   parserOptions: {
     "ecmaFeatures": {
@@ -28,11 +31,9 @@ module.exports = {
     "prettier"
   ],
   rules: {
-    "prettier/prettier": "error",
-    "no-unused-expressions": "off",
+    "no-use-before-define": "off",
+    "@typescript-eslint/no-use-before-define": "off",
     "no-underscore-dangle": "off",
-    "spaced-comment": "off",
-
     "class-methods-use-this": "off",
     "@typescript-eslint/camelcase": "off",
     "no-restricted-syntax": "off",
@@ -43,6 +44,10 @@ module.exports = {
         "argsIgnorePattern": "_"
       }
     ],
+
+    "prettier/prettier": "error",
+    "no-unused-expressions": "off",
+    "spaced-comment": "off",
     "react/prop-types": "off",
     "react/jsx-props-no-spreading": "off",
     "react/jsx-one-expression-per-line": "off",

@@ -1,4 +1,4 @@
-import { Request, Response } from "express"
+import { Request, Response } from 'express';
 import Item from '../models/items';
 import knex from '../database/connection';
 

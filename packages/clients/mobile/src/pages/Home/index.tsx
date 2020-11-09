@@ -1,48 +1,79 @@
-import React, { useCallback, useState } from 'react'
-import { View, Image, StyleSheet, Text, ImageBackground, TextInput, KeyboardAvoidingView, Platform } from 'react-native'
-import { Feather } from '@expo/vector-icons'
-import { RectButton } from 'react-native-gesture-handler'
-import { useNavigation } from '@react-navigation/native'
+import React, { useCallback, useState } from 'react';
+import {
+  View,
+  Image,
+  StyleSheet,
+  Text,
+  ImageBackground,
+  TextInput,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
+import { Feather } from '@expo/vector-icons';
+import { RectButton } from 'react-native-gesture-handler';
+import { useNavigation } from '@react-navigation/native';
 
-const Home = () => {
-  const [uf, setUf] = useState("")
-  const [city, setCity] = useState("")
-  const navigation = useNavigation()
+const Home: React.FC = () => {
+  const [uf, setUf] = useState('');
+  const [city, setCity] = useState('');
+  const navigation = useNavigation();
 
-  const handleNavigationtoPoints = useCallback(() =>
-    navigation.navigate('Points', { uf, city }), [],
-  )
+  const handleNavigationtoPoints = useCallback(
+    () => navigation.navigate('Points', { uf, city }),
+    [navigation, uf, city],
+  );
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? "padding" : undefined} >
-      <ImageBackground source={require('../../assets/home-background.png')} style={styles.container}>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
+      <ImageBackground
+        source={require('../../assets/home-background.png')}
+        style={styles.container}
+      >
         <View style={styles.main}>
           <Image source={require('../../assets/logo.png')} />
           <View>
-            <Text style={styles.title} >Seu marketplace de coleta de resíduos</Text>
-            <Text style={styles.description}>Ajudamos pessoas a encontrarem pontosde coleta de forma eficiente</Text>
+            <Text style={styles.title}>
+              Seu marketplace de coleta de resíduos
+            </Text>
+            <Text style={styles.description}>
+              Ajudamos pessoas a encontrarem pontosde coleta de forma eficiente
+            </Text>
           </View>
         </View>
 
         <View style={styles.footer}>
-
-          <TextInput style={styles.input} placeholder="Digite a UF" value={uf} onChangeText={setUf} maxLength={2} autoCapitalize="characters" autoCorrect={false} />
-          <TextInput style={styles.input} placeholder="Digite a cidade" value={city} onChangeText={setCity} autoCorrect={false} />
-          <RectButton style={styles.button} onPress={handleNavigationtoPoints} >
+          <TextInput
+            style={styles.input}
+            placeholder="Digite a UF"
+            value={uf}
+            onChangeText={setUf}
+            maxLength={2}
+            autoCapitalize="characters"
+            autoCorrect={false}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Digite a cidade"
+            value={city}
+            onChangeText={setCity}
+            autoCorrect={false}
+          />
+          <RectButton style={styles.button} onPress={handleNavigationtoPoints}>
             <View style={styles.buttonIcon}>
               <Text>
                 <Feather name="arrow-right" color="#fff" size={24} />
               </Text>
             </View>
-            <Text style={styles.buttonText}>
-              Entrar
-          </Text>
+            <Text style={styles.buttonText}>Entrar</Text>
           </RectButton>
         </View>
       </ImageBackground>
     </KeyboardAvoidingView>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -100,7 +131,7 @@ const styles = StyleSheet.create({
     width: 60,
     backgroundColor: 'rgba(0, 0, 0, 0.1)',
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
 
   buttonText: {
@@ -110,7 +141,7 @@ const styles = StyleSheet.create({
     color: '#FFF',
     fontFamily: 'Roboto_500Medium',
     fontSize: 16,
-  }
+  },
 });
 
-export default Home
+export default Home;

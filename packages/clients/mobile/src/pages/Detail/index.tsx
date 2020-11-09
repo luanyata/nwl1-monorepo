@@ -1,64 +1,65 @@
-import { useNavigation, useRoute } from '@react-navigation/native'
-import React, { useCallback, useEffect, useState } from 'react'
-import { View, StyleSheet, Image, Text, Linking } from 'react-native'
-import { TouchableOpacity } from 'react-native-gesture-handler'
-import { Feather, FontAwesome } from '@expo/vector-icons'
-import Constants from 'expo-constants'
-import { RectButton } from 'react-native-gesture-handler'
-import { api } from '@nlw-1/axios'
+import { useNavigation, useRoute } from '@react-navigation/native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { View, StyleSheet, Image, Text, Linking } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { Feather, FontAwesome } from '@expo/vector-icons';
+import Constants from 'expo-constants';
+import { RectButton } from 'react-native-gesture-handler';
+import { api } from '@nlw-1/axios';
 import * as MailComposer from 'expo-mail-composer';
 
-
 interface Params {
-  pointId: number
+  pointId: number;
 }
 
 interface Data {
   point: {
     image: string;
+    imageUrl: string;
     name: string;
     email: string;
     whatsapp: string;
     city: string;
-    uf: string
-  },
-  items: { title: string }[]
+    uf: string;
+  };
+  items: { title: string }[];
 }
 
 const Detail: React.FC = () => {
+  const [data, setData] = useState<Data>({} as Data);
 
-  const [data, setData] = useState<Data>({} as Data)
+  const navigation = useNavigation();
+  const route = useRoute();
 
-  const navigation = useNavigation()
-  const route = useRoute()
-
-  const routeParams = route.params as Params
+  const routeParams = route.params as Params;
 
   useEffect(() => {
-    api.get(`points/${routeParams.pointId}`).then(response => setData(response.data))
-  }, [routeParams])
+    api
+      .get(`points/${routeParams.pointId}`)
+      .then(response => setData(response.data));
+  }, [routeParams]);
 
-  const handleNavigationBack = useCallback(
-    () => navigation.goBack(),
-    [],
-  )
+  const handleNavigationBack = useCallback(() => navigation.goBack(), []);
 
   const handleComposeMail = useCallback(
-    () => MailComposer.composeAsync({
-      subject: "Interesse na coleta de resíduos",
-      recipients: [data.point.email]
-    }),
-    [],
-  )
+    () =>
+      MailComposer.composeAsync({
+        subject: 'Interesse na coleta de resíduos',
+        recipients: [data.point.email],
+      }),
+    [data],
+  );
 
   const handleWhatsapp = useCallback(
-    () => Linking.openURL(`whatsapp://send?phone=${data.point.whatsapp}&text=Tenho interese na coleta de resíduos`),
-    [],
-  )
-
+    () =>
+      Linking.openURL(
+        `whatsapp://send?phone=${data.point.whatsapp}&text=Tenho interese na coleta de resíduos`,
+      ),
+    [data],
+  );
 
   if (!data.point) {
-    return null
+    return null;
   }
 
   return (
@@ -67,16 +68,22 @@ const Detail: React.FC = () => {
         <TouchableOpacity onPress={handleNavigationBack}>
           <Feather name="arrow-left" size={20} color="#34cb79" />
         </TouchableOpacity>
-        <Image style={styles.pointImage} source={{ uri: data.point.image }} />
+        <Image
+          style={styles.pointImage}
+          source={{ uri: data.point.imageUrl }}
+        />
 
         <Text style={styles.pointName}>{data.point.name}</Text>
 
-
-        <Text style={styles.pointItems}>{data.items.map(item => item.title).join(', ')}</Text>
+        <Text style={styles.pointItems}>
+          {data.items.map(item => item.title).join(', ')}
+        </Text>
 
         <View style={styles.address}>
           <Text style={styles.addressTitle}>Endereço</Text>
-          <Text style={styles.addressContent}>{data.point.city}, {data.point.uf}</Text>
+          <Text style={styles.addressContent}>
+            {data.point.city}, {data.point.uf}
+          </Text>
         </View>
       </View>
       <View style={styles.footer}>
@@ -91,8 +98,8 @@ const Detail: React.FC = () => {
         </RectButton>
       </View>
     </>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -121,7 +128,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 24,
     marginTop: 8,
-    color: '#6C6C80'
+    color: '#6C6C80',
   },
 
   address: {
@@ -138,7 +145,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto_400Regular',
     lineHeight: 24,
     marginTop: 8,
-    color: '#6C6C80'
+    color: '#6C6C80',
   },
 
   footer: {
@@ -147,7 +154,7 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     paddingHorizontal: 32,
     flexDirection: 'row',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
   },
 
   button: {
@@ -157,7 +164,7 @@ const styles = StyleSheet.create({
     height: 50,
     flexDirection: 'row',
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
 
   buttonText: {
@@ -168,4 +175,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Detail
+export default Detail;

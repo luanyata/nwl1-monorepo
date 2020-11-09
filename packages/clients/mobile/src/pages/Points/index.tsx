@@ -1,98 +1,114 @@
-import React, { useCallback, useEffect, useState } from 'react'
-import Constants from 'expo-constants'
-import { Feather } from '@expo/vector-icons'
-import { useNavigation, useRoute } from '@react-navigation/native'
-import { View, StyleSheet, TouchableOpacity, Text, ScrollView, Image, Alert } from 'react-native'
-import MapView, { Marker } from 'react-native-maps'
-import { SvgUri } from 'react-native-svg'
-import * as Location from 'expo-location'
-import { api } from '@nlw-1/axios'
+import React, { useCallback, useEffect, useState } from 'react';
+import Constants from 'expo-constants';
+import { Feather } from '@expo/vector-icons';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Text,
+  ScrollView,
+  Image,
+  Alert,
+} from 'react-native';
+import MapView, { Marker } from 'react-native-maps';
+import { SvgUri } from 'react-native-svg';
+import * as Location from 'expo-location';
+import { api } from '@nlw-1/axios';
 
 interface Item {
   id: number;
   title: string;
-  imageUrl: string
+  imageUrl: string;
 }
 
 interface Point {
-  id: number,
-  name: string,
+  id: number;
+  name: string;
   image: string;
+  imageUrl: string;
   latitude: number;
   longitude: number;
 }
 
 interface Params {
   uf: string;
-  city: string
+  city: string;
 }
 
 const Points: React.FC = () => {
-  const navigation = useNavigation()
-  const route = useRoute()
+  const navigation = useNavigation();
+  const route = useRoute();
 
-  const routeParams = route.params as Params
+  const routeParams = route.params as Params;
 
-  console.log(routeParams)
-
-  const [items, setItems] = useState<Item[]>([])
-  const [selectedItems, setSelectedItems] = useState<number[]>([])
-  const [points, setPoints] = useState<Point[]>([])
-  const [initialPosition, setinitialPosition] = useState<[number, number]>([0, 0])
+  const [items, setItems] = useState<Item[]>([]);
+  const [selectedItems, setSelectedItems] = useState<number[]>([]);
+  const [points, setPoints] = useState<Point[]>([]);
+  const [initialPosition, setinitialPosition] = useState<[number, number]>([
+    0,
+    0,
+  ]);
 
   useEffect(() => {
-    const loadPosition = async () => {
+    const loadPosition = async (): Promise<void> => {
       const { status } = await Location.requestPermissionsAsync();
       if (status !== 'granted') {
-        Alert.alert("Oooops...", "Precisamos de sua permissão para obter a localização!")
-        return
+        Alert.alert(
+          'Oooops...',
+          'Precisamos de sua permissão para obter a localização!',
+        );
+        return;
       }
 
-      const location = await Location.getCurrentPositionAsync()
-      const { latitude, longitude } = location.coords
-      setinitialPosition([latitude, longitude])
-    }
+      const location = await Location.getCurrentPositionAsync();
+      const { latitude, longitude } = location.coords;
+      setinitialPosition([latitude, longitude]);
+    };
 
-    loadPosition()
-
-  }, [])
+    loadPosition();
+  }, []);
 
   useEffect(() => {
-    api.get("points", { params: { city: routeParams.city, uf: routeParams.uf, items: selectedItems } })
-      .then(response => {
-        console.log(response.data)
-        setPoints(response.data)
+    api
+      .get('points', {
+        params: {
+          city: routeParams.city,
+          uf: routeParams.uf,
+          items: selectedItems,
+        },
       })
-  }, [selectedItems])
+      .then(response => setPoints(response.data));
+  }, [selectedItems, routeParams]);
 
   useEffect(() => {
-    api.get('items')
+    api
+      .get('items')
       .then(response => setItems(response.data))
-      .catch(err => console.warn(err))
+      .catch(err => console.warn(err));
+  }, []);
 
-  }, [])
+  const handleSelecItem = useCallback(
+    (id: number) => {
+      const alreadySelected = selectedItems.findIndex(item => item === id);
+      if (alreadySelected >= 0) {
+        const filteredItems = selectedItems.filter(item => item !== id);
+        setSelectedItems(filteredItems);
+      } else {
+        setSelectedItems([...selectedItems, id]);
+      }
+    },
+    [selectedItems],
+  );
 
-
-  const handleSelecItem = useCallback((id: number) => {
-    const alreadySelected = selectedItems.findIndex(item => item === id)
-    if (alreadySelected >= 0) {
-      const filteredItems = selectedItems.filter(item => item !== id)
-      setSelectedItems(filteredItems)
-    } else {
-      setSelectedItems([...selectedItems, id])
-    }
-  }, [selectedItems])
-
-
-  const handleNavigationBack = useCallback(
-    () => navigation.goBack(),
-    [],
-  )
+  const handleNavigationBack = useCallback(() => navigation.goBack(), [
+    navigation,
+  ]);
 
   const handleNavigationToDetail = useCallback(
-    (pointId: number) => navigation.navigate("Detail", { pointId }),
-    [],
-  )
+    (pointId: number) => navigation.navigate('Detail', { pointId }),
+    [navigation],
+  );
 
   return (
     <>
@@ -101,30 +117,37 @@ const Points: React.FC = () => {
           <Feather name="arrow-left" size={20} color="#34cb79" />
         </TouchableOpacity>
         <Text style={styles.title}>Bem Vindo.</Text>
-        <Text style={styles.description}>Encontre no mapa um ponto de coleta.</Text>
+        <Text style={styles.description}>
+          Encontre no mapa um ponto de coleta.
+        </Text>
 
         <View style={styles.mapContainer}>
-
           {initialPosition[0] !== 0 && (
-            <MapView style={styles.map}
+            <MapView
+              style={styles.map}
               loadingEnabled={initialPosition[0] === 0}
               initialRegion={{
                 latitude: initialPosition[0],
                 longitude: initialPosition[1],
                 latitudeDelta: 0.014,
-                longitudeDelta: 0.014
-              }}>
-
+                longitudeDelta: 0.014,
+              }}
+            >
               {points.map(point => (
-                <Marker key={String(point.id)}
+                <Marker
+                  key={String(point.id)}
                   style={styles.mapMarker}
                   onPress={() => handleNavigationToDetail(point.id)}
                   coordinate={{
                     latitude: point.latitude,
                     longitude: point.longitude,
-                  }}>
+                  }}
+                >
                   <View style={styles.mapMarkerContainer}>
-                    <Image style={styles.mapMarkerImage} source={{ uri: point.image }} />
+                    <Image
+                      style={styles.mapMarkerImage}
+                      source={{ uri: point.imageUrl }}
+                    />
                     <Text style={styles.mapMarkerTitle}>{point.name}</Text>
                   </View>
                 </Marker>
@@ -137,17 +160,18 @@ const Points: React.FC = () => {
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 20 }}>
-
+          contentContainerStyle={{ paddingHorizontal: 20 }}
+        >
           {items.map(item => (
             <TouchableOpacity
               activeOpacity={0.6}
               key={String(item.id)}
               style={[
                 styles.item,
-                selectedItems.includes(item.id) ? styles.selectedItem : {}
+                selectedItems.includes(item.id) ? styles.selectedItem : {},
               ]}
-              onPress={() => handleSelecItem(item.id)}>
+              onPress={() => handleSelecItem(item.id)}
+            >
               <SvgUri width={42} height={42} uri={item.imageUrl} />
               <Text style={styles.itemTitle}>{item.title}</Text>
             </TouchableOpacity>
@@ -155,8 +179,8 @@ const Points: React.FC = () => {
         </ScrollView>
       </View>
     </>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -203,7 +227,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     borderRadius: 8,
     overflow: 'hidden',
-    alignItems: 'center'
+    alignItems: 'center',
   },
 
   mapMarkerImage: {
@@ -255,4 +279,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Points
+export default Points;

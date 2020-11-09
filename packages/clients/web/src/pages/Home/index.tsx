@@ -1,9 +1,8 @@
-import React from 'react'
-import logo from '../../assets/logo.svg'
-import { Link } from 'react-router-dom'
-import { FiLogIn } from 'react-icons/fi'
-import './style.css'
-
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { FiLogIn } from 'react-icons/fi';
+import logo from '../../assets/logo.svg';
+import './style.css';
 
 const Home: React.FC = () => {
   return (
@@ -14,7 +13,9 @@ const Home: React.FC = () => {
         </header>
         <main>
           <h1>Seu marketplace de coleta de resíduos</h1>
-          <p>Ajudamos pessoas a encontrarem pontos de coleta de forma eficiente</p>
+          <p>
+            Ajudamos pessoas a encontrarem pontos de coleta de forma eficiente
+          </p>
 
           <Link to="/create-point">
             <span>
@@ -25,7 +26,7 @@ const Home: React.FC = () => {
         </main>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;

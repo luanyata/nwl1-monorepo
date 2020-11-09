@@ -1,19 +1,18 @@
-import { StatusBar } from 'expo-status-bar'
+import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { Roboto_400Regular, Roboto_500Medium } from '@expo-google-fonts/roboto'
-import { Ubuntu_700Bold, useFonts } from '@expo-google-fonts/ubuntu'
+import { Roboto_400Regular, Roboto_500Medium } from '@expo-google-fonts/roboto';
+import { Ubuntu_700Bold, useFonts } from '@expo-google-fonts/ubuntu';
 import { AppLoading } from 'expo';
 import Routes from './src/routes';
 
-export default function App() {
+const App: React.FC = () => {
   const [fontsLoaded] = useFonts({
     Roboto_400Regular,
     Roboto_500Medium,
-    Ubuntu_700Bold
-  })
+    Ubuntu_700Bold,
+  });
 
-  if (!fontsLoaded)
-    return <AppLoading />
+  if (!fontsLoaded) return <AppLoading />;
 
   return (
     <>
@@ -21,5 +20,6 @@ export default function App() {
       <Routes />
     </>
   );
-}
+};
 
+export default App;
