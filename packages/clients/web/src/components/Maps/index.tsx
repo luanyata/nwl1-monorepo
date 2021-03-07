@@ -34,7 +34,9 @@ const Maps: React.FC<IProps> = ({ position, setPosition }: IProps) => {
 
   return (
     <GoogleMapReact
-      bootstrapURLKeys={{ key: process.env.GOOGLE_MAPS_KEY || '' }}
+      bootstrapURLKeys={{
+        key: process.env.GOOGLE_MAPS_KEY || '',
+      }}
       center={{
         lat: initialPosition.lat,
         lng: initialPosition.lng,

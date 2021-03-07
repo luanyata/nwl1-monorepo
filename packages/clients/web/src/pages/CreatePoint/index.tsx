@@ -5,6 +5,7 @@ import { api, axios } from '@nlw-1/axios';
 import logo from '../../assets/logo.svg';
 import Maps from '../../components/Maps';
 import './style.css';
+import Dropzone from '../../components/Dropzone';
 
 interface Item {
   id: number;
@@ -42,6 +43,7 @@ const CreatePoint: React.FC = () => {
   const [selectedCity, setSelectedCity] = useState('');
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
   const [position, setPosition] = useState<ICoordinates>({ lat: 0, lng: 0 });
+  const [selectedFile, setSelectedFile] = useState<File>();
 
   const history = useHistory();
 
@@ -92,19 +94,22 @@ const CreatePoint: React.FC = () => {
     const uf = selectedUf;
     const { lat, lng } = position;
 
-    const data = {
-      email,
-      name,
-      whatsapp,
-      city,
-      uf,
-      latitude: lat,
-      longitude: lng,
-      items: selectedItems,
-    };
+    const data = new FormData();
+
+    data.append('email', email);
+    data.append('name', name);
+    data.append('whatsapp', whatsapp);
+    data.append('city', city);
+    data.append('uf', uf);
+    data.append('latitude', String(lat));
+    data.append('longitude', String(lng));
+    data.append('items', selectedItems.join(','));
+
+    if (selectedFile) {
+      data.append('image', selectedFile);
+    }
 
     await api.post('points', data);
-    alert('Ponto de coleta criado');
     history.push('/');
   };
 
@@ -122,6 +127,8 @@ const CreatePoint: React.FC = () => {
         <h1>
           Cadastro do <br /> ponto de coleta
         </h1>
+
+        <Dropzone onFileUploaded={setSelectedFile} />
 
         <fieldset>
           <legend>

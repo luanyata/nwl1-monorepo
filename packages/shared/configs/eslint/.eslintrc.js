@@ -39,7 +39,7 @@ module.exports = {
     "no-restricted-syntax": "off",
     "no-useless-constructor": "off",
     "@typescript-eslint/no-unused-vars": [
-      "error",
+      "warn",
       {
         "argsIgnorePattern": "_"
       }

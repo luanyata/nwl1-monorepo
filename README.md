@@ -25,7 +25,7 @@ O conceito de monorepo foi utilizando onde todas as aplicações correspontende 
 
 * Front-End ✅
 * Back-End ✅
-* Mobile ❌
+* Mobile ✅
 
 
 ## Instalação das dependencias:
@@ -48,6 +48,14 @@ No diretório `nwl1-monorepo/packages/clients/web` execute o comando:
 ```
 $ yarn start
 ```
+
+### Executar cliente Mobile
+
+No diretório `nwl1-monorepo/packages/clients/mobile` execute o comando:
+```
+$ yarn start
+```
+
 
 ## Licença
 MIT
